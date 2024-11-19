@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot FAQ</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Chatbot Pusat Prestasi Mahasiswa JTIK <b>Cosine Simalarty</b></h1>
+    </header>
+
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box">
+        </div>
+
+        <form id="chat-form" action="#" method="POST">
+            <input type="text" id="user-query" name="user_query" placeholder="Tanyakan sesuatu..." required>
+            <button type="submit" id="send-btn">Kirim</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('chat-form').onsubmit = function(event) {
+            event.preventDefault();
+            var userQuery = document.getElementById('user-query').value;
+            if (userQuery) {
+                var userMessage = document.createElement('div');
+                userMessage.classList.add('chat-message', 'user-message');
+                userMessage.textContent = userQuery;
+                document.getElementById('chat-box').appendChild(userMessage);
+                fetch('/get_response', {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        'user_query': userQuery
+                    }),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => response.text()) 
+                .then(data => {
+                    var botMessage = document.createElement('div');
+                    botMessage.classList.add('chat-message', 'bot-message');
+                    botMessage.textContent = data;
+                    document.getElementById('chat-box').appendChild(botMessage);
+                    document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+                });
+                
+                document.getElementById('user-query').value = '';
+            }
+        };
+    </script>
+</body>
+</html>
